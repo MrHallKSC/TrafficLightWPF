@@ -2,17 +2,21 @@
 
 A simple traffic light simulation to help you transition from **console programming** to **WPF (Windows Presentation Foundation)** GUI applications.
 
+Simulates a traffic light using a state machine pattern—a clean way to model systems that move through defined states (Red → Red+Amber → Green → Amber → repeat). You'll learn how WPF apps work (XAML for layout, C# for behaviour), how to handle events like button clicks and timer ticks, and how to keep your logic separate from your UI code. Heavily commented throughout — assumes no prior WPF knowledge needed.
+
+![TrafficLightWPF Screenshot](TrafficLightWPF.png)
+
 ---
 
-## What You Already Know
+## Assumes that you Already Know
 
-If you can write C# console programs, you already understand:
+This project assumes that you already understand the following from writing console applications and have studied OOP. 
 
 - **Classes and Objects** - creating instances, calling methods
 - **Properties** - getters and setters
 - **Enums** - named constants like `TrafficLightState.Red`
 - **Methods** - writing and calling functions
-- **Control flow** - if/else, switch, loops
+- **Control flow** - if/else, loops
 
 **Good news:** All of this works exactly the same in WPF! The C# language doesn't change.
 
