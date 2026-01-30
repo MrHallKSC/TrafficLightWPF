@@ -355,21 +355,110 @@ The logic stays the same. Only the View changes.
 
 ---
 
-## Where Is the State Machine?
+## What Is a Finite State Machine?
 
 **File:** `TrafficLightController.cs`
 
-This class contains ALL the traffic light logic:
+A **Finite State Machine (FSM)** is a way of modelling something that:
+1. Can only be in **one state at a time**
+2. Has a **limited (finite) number** of possible states
+3. Changes state based on **rules** or **events**
 
-- What state we're in (`CurrentState`)
-- How many seconds remain (`RemainingSeconds`)
-- Whether we're running (`IsRunning`)
-- How to transition between states (`GetNextState()`)
-- How to handle time passing (`Tick()`)
+Traffic lights are a perfect example! A real traffic light can't be "half red" or "mostly green" - it's always in exactly one state.
 
-**Important:** This class has NO WPF code! It doesn't know about buttons, colours, or XAML. It's pure logic that could work in a console app, a web app, or even on a Raspberry Pi.
+### The States
 
-This is called **Separation of Concerns** - keeping logic separate from presentation.
+Our traffic light has four possible states:
+
+| State | Lamps On | Description |
+|-------|----------|-------------|
+| **Red** | Red only | Stop! |
+| **RedAmber** | Red + Amber | Get ready to go (UK only) |
+| **Green** | Green only | Go! |
+| **Amber** | Amber only | Prepare to stop |
+
+At any moment, the light is in **exactly one** of these states.
+
+In code, we represent these as an **enum**:
+
+```csharp
+public enum TrafficLightState
+{
+    Red,
+    RedAmber,
+    Green,
+    Amber
+}
+```
+
+### The Transitions
+
+A state machine also defines **how** states change. This is often shown as a diagram:
+
+```
+UK Sequence:
+
+    ┌──────────────────────────────────────────────┐
+    │                                              │
+    ▼                                              │
+  ┌─────┐      ┌───────────┐      ┌───────┐      ┌─────┐
+  │ RED │ ───► │ RED+AMBER │ ───► │ GREEN │ ───► │AMBER│
+  └─────┘      └───────────┘      └───────┘      └─────┘
+    ▲                                              │
+    │                                              │
+    └──────────────────────────────────────────────┘
+```
+
+Each arrow is a **transition**. The rules are simple:
+- From Red, you can ONLY go to Red+Amber
+- From Red+Amber, you can ONLY go to Green
+- From Green, you can ONLY go to Amber
+- From Amber, you can ONLY go to Red
+
+You can't skip states or go backwards - the machine enforces valid transitions.
+
+### Why Use a State Machine?
+
+Without a state machine, you might write messy code like:
+
+```csharp
+// BAD - no state machine
+if (redOn && !amberOn && !greenOn && timeExpired)
+{
+    redOn = true;
+    amberOn = true;
+    // What if we forget to set greenOn = false?
+    // What if we have 10 different conditions to check?
+}
+```
+
+With a state machine:
+
+```csharp
+// GOOD - clean state machine
+if (currentState == TrafficLightState.Red)
+{
+    return TrafficLightState.RedAmber;  // Only valid next state
+}
+```
+
+The state machine approach:
+- Makes transitions **explicit** and **easy to follow**
+- Prevents **invalid states** (e.g., red AND green both on)
+- Is **easy to extend** (add a new state? just add transitions)
+- Is **easy to test** (given state X, next state should be Y)
+
+### The Controller's Job
+
+The `TrafficLightController` class manages:
+
+| Property/Method | Purpose |
+|-----------------|---------|
+| `CurrentState` | Which state we're in right now |
+| `RemainingSeconds` | Countdown until next transition |
+| `GetNextState()` | The transition rules (state diagram in code) |
+| `Tick()` | Called by timer to advance time |
+| `Start()`, `Pause()`, `Reset()` | Control methods called by buttons |
 
 ---
 
