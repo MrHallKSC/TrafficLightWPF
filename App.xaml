@@ -1,0 +1,34 @@
+<!--
+    ============================================================================
+    APP.XAML - Application Definition
+    ============================================================================
+
+    FOR STUDENTS:
+    This file defines the application itself. Think of it as the "entry point"
+    configuration for your WPF app.
+
+    Key things to notice:
+    1. x:Class="TrafficLightWPF.App" - Links this XAML to the App.xaml.cs code file
+    2. StartupUri="MainWindow.xaml" - Tells WPF which window to show when the app starts
+
+    In console apps, you have Main() as your entry point.
+    In WPF, the App class handles startup, and StartupUri points to your first window.
+
+    You can also define application-wide resources (styles, colours) here,
+    but we're keeping it simple for this example.
+    ============================================================================
+-->
+<Application x:Class="TrafficLightWPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+
+    <!--
+        Application.Resources is where you can define styles and colours
+        that apply to the whole app. We're not using it in this basic example,
+        but it's good to know it exists!
+    -->
+    <Application.Resources>
+    </Application.Resources>
+
+</Application>

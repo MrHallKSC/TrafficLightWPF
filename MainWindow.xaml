@@ -1,0 +1,471 @@
+<!--
+    ============================================================================
+    MAINWINDOW.XAML _ The User Interface Layout
+    ============================================================================
+
+    FOR STUDENTS:
+    Welcome to XAML! This is how WPF defines what the window LOOKS like.
+
+    XAML vs C#:
+    _ XAML (.xaml file) = STRUCTURE and LAYOUT (what controls exist, where they go)
+    _ C# (.xaml.cs file) = BEHAVIOUR (what happens when you click a button)
+
+    COMPARING TO CONSOLE APPS:
+    In a console app, you might write:
+        Console.WriteLine("Press a key...");
+        Console.ReadKey();
+
+    In WPF, you don't "write" output _ you CREATE CONTROLS that display things:
+        [TextBlock Text="Hello World" /]
+        [Button Content="Click Me" /]
+
+    KEY CONCEPTS IN THIS FILE:
+    1. CONTAINERS: Grid, StackPanel _ hold and arrange other controls
+    2. CONTROLS: Button, TextBox, TextBlock, Ellipse, CheckBox
+    3. x:Name: Gives a control a name so C# code can access it
+    4. Events: Click="ButtonName_Click" connects a button to C# code
+    5. Properties: Width, Height, Margin, Fill, etc. control appearance
+
+    READ THIS FILE TOP_TO_BOTTOM _ the comments explain each section!
+    ============================================================================
+-->
+
+<!--
+    The Window element is the top_level container (the actual window).
+    x:Class links this XAML to the MainWindow class in MainWindow.xaml.cs
+-->
+<Window x:Class="TrafficLightWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Traffic Light Simulator"
+        Height="520"
+        Width="440"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen">
+
+    <!--
+        ====================================================================
+        GRID: The Main Layout Container
+        ====================================================================
+
+        A Grid divides space into rows and columns, like a table.
+        Here we have 2 columns:
+          _ Column 0: Traffic light display AND status information (stacked)
+          _ Column 1: Controls (buttons, inputs)
+
+        Width="*" means "take all remaining space"
+        Width="Auto" means "just big enough for content"
+        Width="150" means exactly 150 pixels
+
+        ASCII DIAGRAM _ How the Grid divides the window:
+
+        +=========================================+
+        |              WINDOW                     |
+        |  +~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~+  |
+        |  |                           |       |  |
+        |  |     COLUMN 0              | COL 1 |  |
+        |  |     Width="*"             | 150px |  |
+        |  |     (stretches)           |       |  |
+        |  |                           |       |  |
+        |  |   Traffic Light           | Ctrls |  |
+        |  |   + Status Info           |       |  |
+        |  |                           |       |  |
+        |  +~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~+  |
+        +=========================================+
+    -->
+    <Grid Margin="15">
+        <!--
+            Define our columns. Think of this like setting up a table structure.
+            Column 0: Traffic light and status (takes remaining space)
+            Column 1: Controls (fixed width)
+        -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
+
+        <!--
+            ================================================================
+            COLUMN 0: Traffic Light Display AND Status Information
+            ================================================================
+
+            We use a StackPanel to stack the traffic light on top of the
+            status information. This gives more horizontal space for text.
+
+            ASCII DIAGRAM _ StackPanel stacks children VERTICALLY:
+
+            +~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+            |        StackPanel         |
+            |  +.....................+  |
+            |  |   Traffic Light     |  |
+            |  |   (Border + lamps)  |  |
+            |  +.....................+  |
+            |           |               |
+            |           v               |
+            |  +.....................+  |
+            |  |   Status Info       |  |
+            |  |   (another Stack)   |  |
+            |  +.....................+  |
+            +~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+
+            The arrow shows the stacking direction (top to bottom).
+            Each child appears BELOW the previous one.
+        -->
+        <StackPanel Grid.Column="0"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+
+            <!--
+                TRAFFIC LIGHT HOUSING
+                =====================
+                A Border with a dark background to look like a traffic
+                light housing, with the three lamp Ellipses stacked inside.
+
+                ASCII DIAGRAM _ The traffic light structure:
+
+                +...................+
+                |  Border (dark)    |
+                |  +.............+  |
+                |  | StackPanel  |  |
+                |  |  +.......+  |  |
+                |  |  |  RED  |  |  |  = Ellipse (RedLamp)
+                |  |  +.......+  |  |
+                |  |  +.......+  |  |
+                |  |  | AMBER |  |  |  = Ellipse (AmberLamp)
+                |  |  +.......+  |  |
+                |  |  +.......+  |  |
+                |  |  | GREEN |  |  |  = Ellipse (GreenLamp)
+                |  |  +.......+  |  |
+                |  +.............+  |
+                +...................+
+            -->
+            <Border Background="#333333"
+                    CornerRadius="10"
+                    Padding="15"
+                    HorizontalAlignment="Center">
+
+                <!--
+                    StackPanel: children stack vertically by default.
+                    Each Ellipse is a lamp in our traffic light.
+                -->
+                <StackPanel>
+                    <!--
+                        RED LAMP
+                        ========
+                        Ellipse = a circle/oval shape
+                        x:Name="RedLamp" = gives this control a name for C# to use
+                        Fill = the colour (we'll change this in code_behind)
+                        Stroke = border colour
+                        StrokeThickness = border width
+
+                        IMPORTANT: The Fill starts as DarkRed (lamp OFF).
+                        Code_behind will change it to Red (lamp ON) when needed.
+                    -->
+                    <Ellipse x:Name="RedLamp"
+                             Width="60"
+                             Height="60"
+                             Fill="DarkRed"
+                             Stroke="Black"
+                             StrokeThickness="3"
+                             Margin="0,3"/>
+
+                    <!--
+                        AMBER LAMP
+                        ==========
+                        Same pattern: starts dim (DarkGoldenrod), code turns it bright
+                    -->
+                    <Ellipse x:Name="AmberLamp"
+                             Width="60"
+                             Height="60"
+                             Fill="DarkGoldenrod"
+                             Stroke="Black"
+                             StrokeThickness="3"
+                             Margin="0,3"/>
+
+                    <!--
+                        GREEN LAMP
+                        ==========
+                    -->
+                    <Ellipse x:Name="GreenLamp"
+                             Width="60"
+                             Height="60"
+                             Fill="DarkGreen"
+                             Stroke="Black"
+                             StrokeThickness="3"
+                             Margin="0,3"/>
+                </StackPanel>
+            </Border>
+
+            <!--
+                ============================================================
+                STATUS INFORMATION (below the traffic light)
+                ============================================================
+
+                TextBlock = displays text (like Console.WriteLine but on screen)
+                We centre the text under the traffic light.
+
+                ASCII DIAGRAM _ Status StackPanel:
+
+                +........................+
+                |      StackPanel        |
+                |  +..................+  |
+                |  |  "RED + AMBER"   |  |  = StateText (big, bold)
+                |  +..................+  |
+                |  +..................+  |
+                |  | "5s remaining"   |  |  = CountdownText
+                |  +..................+  |
+                |  +..................+  |
+                |  |    "Running"     |  |  = StatusText
+                |  +..................+  |
+                +........................+
+            -->
+            <StackPanel Margin="0,20,0,0"
+                        HorizontalAlignment="Center">
+
+                <!--
+                    STATE DISPLAY
+                    =============
+                    Shows which state we're in: "RED", "GREEN", etc.
+                    FontSize, FontWeight make it prominent.
+                    HorizontalAlignment="Center" centres the text.
+                -->
+                <TextBlock x:Name="StateText"
+                           Text="RED"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Foreground="#333333"
+                           HorizontalAlignment="Center"/>
+
+                <!--
+                    COUNTDOWN DISPLAY
+                    =================
+                    Shows seconds remaining before next state change
+                -->
+                <TextBlock x:Name="CountdownText"
+                           Text="0s remaining"
+                           FontSize="16"
+                           Foreground="#666666"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0"/>
+
+                <!--
+                    STATUS DISPLAY
+                    ==============
+                    Shows "Running", "Paused", or "Stopped"
+                -->
+                <TextBlock x:Name="StatusText"
+                           Text="Stopped"
+                           FontSize="14"
+                           Foreground="Gray"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0"/>
+
+            </StackPanel>
+        </StackPanel>
+
+        <!--
+            ================================================================
+            COLUMN 1: Controls (Buttons and Inputs)
+            ================================================================
+
+            This StackPanel contains all our interactive controls.
+
+            ASCII DIAGRAM _ Controls StackPanel:
+
+            +......................+
+            |     StackPanel       |
+            |  +................+  |
+            |  | "Durations..." |  |  = Title TextBlock
+            |  +................+  |
+            |  +................+  |
+            |  | Red:  [____]   |  |  = Grid with label + TextBox
+            |  +................+  |
+            |  +................+  |
+            |  | Green:[____]   |  |
+            |  +................+  |
+            |  +................+  |
+            |  | Amber:[____]   |  |
+            |  +................+  |
+            |  +................+  |
+            |  | [x] UK sequence|  |  = CheckBox
+            |  +................+  |
+            |  +................+  |
+            |  |    [ Start ]   |  |  = Buttons
+            |  +................+  |
+            |  |    [ Pause ]   |  |
+            |  +................+  |
+            |  |    [Resume ]   |  |
+            |  +................+  |
+            |  |    [ Step  ]   |  |
+            |  +................+  |
+            |  |    [ Reset ]   |  |
+            |  +................+  |
+            +......................+
+
+            Everything stacks top_to_bottom automatically!
+        -->
+        <StackPanel Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Margin="10,0,5,0">
+
+            <!--
+                ============================================================
+                DURATION INPUT SECTION
+                ============================================================
+
+                Each duration has a label (TextBlock) and input (TextBox).
+                We use a mini_Grid for each row to align label and input.
+
+                ASCII DIAGRAM _ Mini_Grid for each input row:
+
+                +............................+
+                |          Grid              |
+                |  Col 0 (55px) | Col 1 (*)  |
+                |  +...........+..........+  |
+                |  |  "Red:"   |  [____]  |  |
+                |  +...........+..........+  |
+                +............................+
+
+                The Grid ensures labels and text boxes line up neatly.
+            -->
+            <TextBlock Text="Durations (seconds)"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+
+            <!--
+                RED DURATION INPUT
+                ==================
+                TextBox = user can type in it (unlike TextBlock which is display_only)
+                x:Name lets code_behind read the value: RedDurationInput.Text
+            -->
+            <Grid Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="55"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Red:"
+                           VerticalAlignment="Center"/>
+                <TextBox x:Name="RedDurationInput"
+                         Grid.Column="1"
+                         Text="6"
+                         VerticalContentAlignment="Center"
+                         Height="25"/>
+            </Grid>
+
+            <!-- GREEN DURATION INPUT -->
+            <Grid Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="55"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Green:"
+                           VerticalAlignment="Center"/>
+                <TextBox x:Name="GreenDurationInput"
+                         Grid.Column="1"
+                         Text="6"
+                         VerticalContentAlignment="Center"
+                         Height="25"/>
+            </Grid>
+
+            <!-- AMBER DURATION INPUT -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="55"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Amber:"
+                           VerticalAlignment="Center"/>
+                <TextBox x:Name="AmberDurationInput"
+                         Grid.Column="1"
+                         Text="2"
+                         VerticalContentAlignment="Center"
+                         Height="25"/>
+            </Grid>
+
+            <!--
+                UK SEQUENCE CHECKBOX
+                ====================
+                CheckBox = a toggleable option
+                IsChecked="True" = starts checked (UK sequence by default)
+            -->
+            <CheckBox x:Name="UKSequenceCheckbox"
+                      Content="UK sequence"
+                      IsChecked="True"
+                      Margin="0,0,0,15"/>
+
+            <!--
+                ============================================================
+                CONTROL BUTTONS
+                ============================================================
+
+                Each Button has:
+                _ x:Name: so we can enable/disable it from code
+                _ Content: the text displayed on the button
+                _ Click: the event handler method to call when clicked
+                _ Margin: spacing around the button
+            -->
+
+            <!--
+                START BUTTON
+                ============
+                Click="StartButton_Click" means: when clicked, run the
+                StartButton_Click method in MainWindow.xaml.cs
+            -->
+            <Button x:Name="StartButton"
+                    Content="Start"
+                    Click="StartButton_Click"
+                    Height="30"
+                    Margin="0,0,0,5"/>
+
+            <!--
+                PAUSE BUTTON
+                ============
+                Starts disabled (IsEnabled="False") because you can't
+                pause before starting
+            -->
+            <Button x:Name="PauseButton"
+                    Content="Pause"
+                    Click="PauseButton_Click"
+                    IsEnabled="False"
+                    Height="30"
+                    Margin="0,0,0,5"/>
+
+            <!--
+                RESUME BUTTON
+                =============
+                Also starts disabled
+            -->
+            <Button x:Name="ResumeButton"
+                    Content="Resume"
+                    Click="ResumeButton_Click"
+                    IsEnabled="False"
+                    Height="30"
+                    Margin="0,0,0,5"/>
+
+            <!--
+                STEP BUTTON
+                ===========
+                Always enabled _ advances one state manually
+            -->
+            <Button x:Name="StepButton"
+                    Content="Step"
+                    Click="StepButton_Click"
+                    Height="30"
+                    Margin="0,0,0,5"/>
+
+            <!--
+                RESET BUTTON
+                ============
+                Always enabled _ returns to initial state
+            -->
+            <Button x:Name="ResetButton"
+                    Content="Reset"
+                    Click="ResetButton_Click"
+                    Height="30"
+                    Margin="0,0,0,5"/>
+
+        </StackPanel>
+
+    </Grid>
+
+</Window>

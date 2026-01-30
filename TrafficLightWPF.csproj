@@ -1,0 +1,36 @@
+<!--
+    ============================================================================
+    PROJECT FILE: TrafficLightWPF.csproj
+    ============================================================================
+
+    FOR STUDENTS:
+    This is the project file that tells .NET how to build your application.
+
+    Key settings explained:
+    - OutputType: "WinExe" means a Windows GUI app (not a console app)
+    - TargetFramework: "net8.0-windows" means .NET 8 with Windows-specific features
+    - UseWPF: "true" enables WPF (Windows Presentation Foundation) for the UI
+
+    You rarely need to edit this file directly - Visual Studio manages it for you.
+    ============================================================================
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- WinExe = Windows Executable (GUI app, no console window) -->
+    <OutputType>WinExe</OutputType>
+
+    <!-- Target .NET 8 with Windows desktop support -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+
+    <!-- Enable nullable reference types for better null safety -->
+    <Nullable>enable</Nullable>
+
+    <!-- Treat warnings as errors to encourage good practices -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- This is the magic line that enables WPF! -->
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+</Project>
