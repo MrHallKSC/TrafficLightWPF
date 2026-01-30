@@ -8,7 +8,7 @@ Simulates a traffic light using a state machine pattern—a clean way to model s
 
 ---
 
-## Assumes that you Already Know
+## Assumed knowledge
 
 This project assumes that you already understand the following from writing console applications and have studied OOP. 
 
@@ -275,6 +275,86 @@ TrafficLightWPF/
 
 ---
 
+## Understanding MVC (Model-View-Controller)
+
+This project follows a pattern called **MVC** - a way of organising code that keeps different responsibilities separate. You'll encounter MVC in web development, mobile apps, and desktop applications.
+
+### The Three Parts
+
+| Part | Responsibility | In This Project |
+|------|---------------|-----------------|
+| **Model** | The data and logic (the "brains") | `TrafficLightController.cs` |
+| **View** | What the user sees (the "face") | `MainWindow.xaml` |
+| **Controller** | Handles user input, connects Model and View | `MainWindow.xaml.cs` |
+
+### Why Separate Them?
+
+Imagine you wrote ALL your code in one giant file - the traffic light logic, the button handlers, the UI colours, everything mixed together. This causes problems:
+
+1. **Hard to test**: You can't test the traffic light logic without creating a window
+2. **Hard to change**: Want a different UI? You have to rewrite everything
+3. **Hard to understand**: Where's the bug? Could be anywhere!
+
+By separating concerns:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         YOUR APP                                │
+│                                                                 │
+│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐     │
+│  │   MODEL     │      │ CONTROLLER  │      │    VIEW     │     │
+│  │             │      │             │      │             │     │
+│  │ "I know the │ ───► │ "I connect  │ ───► │ "I show     │     │
+│  │  rules and  │      │  everything │      │  things to  │     │
+│  │  current    │ ◄─── │  together"  │ ◄─── │  the user"  │     │
+│  │  state"     │      │             │      │             │     │
+│  └─────────────┘      └─────────────┘      └─────────────┘     │
+│                                                                 │
+│  TrafficLight          MainWindow           MainWindow          │
+│  Controller.cs         .xaml.cs             .xaml               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### How It Works In This Project
+
+**Model** (`TrafficLightController.cs`):
+- Knows the current state (Red, Green, etc.)
+- Knows how to transition between states
+- Knows how to count down seconds
+- Does NOT know about buttons, colours, or windows
+
+**View** (`MainWindow.xaml`):
+- Defines what controls exist (buttons, text, ellipses)
+- Defines where they appear on screen
+- Does NOT know about traffic light rules
+
+**Controller** (`MainWindow.xaml.cs`):
+- Listens for button clicks
+- Tells the Model what to do
+- Reads the Model's state
+- Updates the View to match
+
+### The Big Benefit
+
+The `TrafficLightController` has **zero WPF code**. Look at its imports:
+
+```csharp
+namespace TrafficLightWPF
+{
+    // Notice: NO "using System.Windows..." here!
+    // This class is pure logic - no UI dependencies.
+```
+
+This means you could reuse this exact controller in:
+- A console application
+- A web application
+- A mobile app
+- Even a physical traffic light with hardware!
+
+The logic stays the same. Only the View changes.
+
+---
+
 ## Where Is the State Machine?
 
 **File:** `TrafficLightController.cs`
@@ -359,7 +439,72 @@ private void UpdateUI()
 }
 ```
 
-The controller knows WHAT state we're in. The UI code knows HOW to display it.
+### The Key Insight: Separation of Knowledge
+
+**The controller knows WHAT state we're in. The UI code knows HOW to display it.**
+
+This is the core principle of separation of concerns. Let's break it down:
+
+| What the Controller Knows | What the Controller Does NOT Know |
+|---------------------------|-----------------------------------|
+| Current state is `Red` | What colour "red" actually looks like |
+| 5 seconds remaining | Where to display the countdown |
+| Red lamp should be on | That we're using ellipses for lamps |
+| Next state is `RedAmber` | That there's a window at all |
+
+| What the UI Code Knows | What the UI Code Does NOT Know |
+|------------------------|--------------------------------|
+| Red means `Brushes.Red` fill | Why we're in the red state |
+| Lamps are ellipse shapes | How long red should last |
+| Text goes in TextBlocks | What state comes next |
+| Where controls are positioned | The rules of traffic lights |
+
+### Why This Matters
+
+**Imagine the controller knew about the UI:**
+
+```csharp
+// BAD - Controller mixed with UI (don't do this!)
+public void Tick()
+{
+    _remainingSeconds--;
+    if (_remainingSeconds <= 0)
+    {
+        _currentState = GetNextState();
+        RedLamp.Fill = Brushes.Red;      // Controller touching UI!
+        StatusText.Text = "RED";          // Controller touching UI!
+    }
+}
+```
+
+Problems with this approach:
+1. Can't test the logic without creating a window
+2. Can't reuse the controller in a different app
+3. Logic and display are tangled together
+4. Harder to find and fix bugs
+
+**Instead, keep them separate:**
+
+```csharp
+// GOOD - Controller only manages state
+public void Tick()
+{
+    _remainingSeconds--;
+    if (_remainingSeconds <= 0)
+    {
+        _currentState = GetNextState();
+        // That's it! Controller doesn't touch the UI.
+        // The UI will ASK the controller for the state and update itself.
+    }
+}
+```
+
+The UI calls `UpdateUI()` after every change, which:
+1. **Asks** the controller: "What state are you in?"
+2. **Decides** how to display that state
+3. **Updates** the visual controls
+
+This one-way flow of information keeps everything clean and testable.
 
 ---
 
@@ -489,6 +634,8 @@ Want to extend this project? Here are some ideas:
 | **DispatcherTimer** | WPF's timer that runs on the UI thread |
 | **Brush** | Defines how to paint a surface (colour, gradient, image) |
 | **Property** | A setting on a control (Text, Fill, IsEnabled, etc.) |
+| **MVC** | Model-View-Controller - a pattern for separating logic from UI |
+| **Separation of Concerns** | Keeping different responsibilities in different classes |
 
 ---
 
